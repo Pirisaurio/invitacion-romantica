@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100b1c">
+  <title>Una invitación especial 💜</title>
+
+  <!-- Tipografía Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- EmailJS: completa las credenciales indicadas en CONFIGURACIÓN -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #100b1c;
+      --panel: rgba(31, 21, 48, .82);
+      --panel-2: #211630;
+      --text: #fff8ff;
+      --muted: #b9a9c9;
+      --pink: #ff75b8;
+      --purple: #a98bff;
+      --line: rgba(211, 177, 255, .16);
+      --shadow: 0 24px 70px rgba(0, 0, 0, .35);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Poppins", sans-serif;
+      background:
+        radial-gradient(ellipse at 15% 10%, rgba(151, 89, 220, .22), transparent 35%),
+        radial-gradient(ellipse at 85% 80%, rgba(255, 91, 164, .14), transparent 35%),
+        var(--bg);
+      overflow-x: hidden;
+    }
+
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .page {
+      width: min(1100px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 54px 0 110px;
+    }
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 48px;
+      color: var(--muted);
+      font-size: .78rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .brand { display: flex; align-items: center; gap: 9px; }
+    .brand-dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: var(--pink); box-shadow: 0 0 18px var(--pink);
+    }
+    .top-tag {
+      border: 1px solid var(--line);
+      border-radius: 99px;
+      padding: 8px 13px;
+      letter-spacing: .04em;
+      text-transform: none;
+    }
+    .hero { text-align: center; max-width: 760px; margin: 0 auto 38px; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: #e3caff; background: rgba(169,139,255,.10);
+      border: 1px solid var(--line); border-radius: 99px;
+      padding: 8px 14px; font-size: .78rem; margin-bottom: 18px;
+    }
+    h1 {
+      font-size: clamp(2.25rem, 6vw, 4.5rem);
+      line-height: 1.08; letter-spacing: -.055em;
+      margin: 0 0 16px; font-weight: 800;
+    }
+    h1 .gradient {
+      background: linear-gradient(100deg, #ff9bc9, #b99aff 65%, #8edcff);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .hero p { color: var(--muted); margin: 0; font-size: clamp(.92rem, 2vw, 1.05rem); }
+    .hint { margin: 28px auto 0; color: #d5c4e5; font-size: .82rem; }
+    .grid {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 17px; margin-top: 35px;
+    }
+    .food-card {
+      position: relative; overflow: hidden;
+      min-height: 245px; padding: 24px;
+      border: 1px solid var(--line); border-radius: 24px;
+      background: linear-gradient(145deg, rgba(44,31,65,.92), rgba(25,17,39,.88));
+      box-shadow: var(--shadow);
+      transition: transform .25s ease, border-color .25s ease, background .25s ease;
+    }
+    .food-card::before {
+      content: ""; position: absolute; width: 150px; height: 150px;
+      right: -70px; top: -75px; border-radius: 50%;
+      background: rgba(190, 131, 255, .10); filter: blur(3px);
+    }
+    .food-card:hover { transform: translateY(-5px); border-color: rgba(255,117,184,.48); }
+    .food-icon { font-size: 2.5rem; margin-bottom: 15px; }
+    .food-card h2 { font-size: 1.16rem; margin: 0 0 7px; }
+    .food-card p { color: var(--muted); font-size: .82rem; min-height: 40px; margin: 0 0 19px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; }
+    .btn {
+      border: 0; border-radius: 12px; padding: 11px 14px;
+      font-weight: 600; font-size: .78rem; transition: .2s ease;
+    }
+    .btn-yes {
+      color: #24142f; background: linear-gradient(100deg, #ff9bc9, #bda1ff);
+      box-shadow: 0 7px 24px rgba(209, 119, 208, .18);
+    }
+    .btn-yes:hover { transform: translateY(-2px); filter: brightness(1.08); }
+    .btn-no {
+      color: #d9cde5; background: rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.10);
+      position: relative; z-index: 2; touch-action: manipulation;
+    }
+    .btn-no:hover { border-color: rgba(255,117,184,.4); }
+    .footer-note { text-align: center; margin-top: 35px; color: #897b9b; font-size: .75rem; }
+
+    .screen {
+      display: none; min-height: 65vh;
+      align-items: center; justify-content: center;
+    }
+    .screen.active { display: flex; }
+    .panel {
+      width: min(620px, 100%); padding: clamp(25px, 5vw, 44px);
+      border: 1px solid var(--line); border-radius: 28px;
+      background: var(--panel); box-shadow: var(--shadow);
+      backdrop-filter: blur(16px); text-align: center;
+    }
+    .love-panel { max-width: 570px; }
+    .love-icon {
+      width: 76px; height: 76px; display: grid; place-items: center;
+      margin: 0 auto 20px; border: 1px solid var(--line); border-radius: 24px;
+      background: linear-gradient(140deg, rgba(255,117,184,.22), rgba(169,139,255,.26));
+      box-shadow: 0 0 38px rgba(201, 118, 224, .18); font-size: 2.35rem;
+    }
+    .love-panel h1 { font-size: clamp(2.2rem, 7vw, 3.7rem); }
+    .love-copy { max-width: 410px; margin: 0 auto; color: var(--muted); }
+    .love-status {
+      min-height: 52px; display: grid; place-items: center; margin: 24px 0 8px;
+      color: #f0cdec; font-size: .92rem;
+    }
+    .love-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+    .love-actions .btn { min-width: 150px; padding: 13px 18px; font-size: .88rem; }
+    .loader-orb {
+      width: 78px; height: 78px; margin: 0 auto 25px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.12);
+      border-top-color: var(--pink); border-right-color: var(--purple);
+      animation: spin 1s linear infinite;
+      box-shadow: 0 0 35px rgba(191,130,255,.16);
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .processing-title { font-size: 1.6rem; margin: 0 0 10px; }
+    .processing-message { color: #d5b9f4; min-height: 27px; }
+    .progress-track { height: 5px; background: rgba(255,255,255,.09); border-radius: 9px; overflow: hidden; margin-top: 25px; }
+    .progress-fill { width: 0; height: 100%; background: linear-gradient(90deg,var(--pink),var(--purple)); transition: width .6s ease; }
+
+    .checkout { text-align: left; }
+    .checkout-head { text-align: center; margin-bottom: 27px; }
+    .success-icon {
+      width: 66px; height: 66px; display: grid; place-items: center;
+      border-radius: 22px; margin: 0 auto 17px; font-size: 2rem;
+      background: linear-gradient(140deg, rgba(255,117,184,.2), rgba(169,139,255,.22));
+      border: 1px solid var(--line);
+    }
+    .checkout h2 { font-size: clamp(1.7rem, 5vw, 2.35rem); margin: 0 0 8px; letter-spacing: -.04em; }
+    .checkout-head p { color: var(--muted); margin: 0; font-size: .9rem; }
+    .price-box {
+      padding: 19px; border-radius: 17px; margin: 22px 0;
+      background: linear-gradient(100deg, rgba(255,117,184,.12), rgba(169,139,255,.13));
+      border: 1px solid var(--line); text-align: center;
+    }
+    .price { font-size: 1.65rem; font-weight: 700; }
+    .price small { color: var(--muted); font-size: .8rem; font-weight: 400; }
+    .details {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0;
+    }
+    .detail {
+      padding: 14px; border: 1px solid var(--line);
+      border-radius: 15px; background: rgba(255,255,255,.035);
+    }
+    .detail label { display: block; color: var(--muted); font-size: .72rem; margin-bottom: 6px; }
+    .detail strong { font-size: .9rem; font-weight: 500; }
+    .detail.full { grid-column: 1 / -1; }
+    .detail input {
+      width: 100%; color: var(--text); color-scheme: dark;
+      background: transparent; border: 0; outline: 0; font-size: .9rem;
+    }
+    .romantic-note {
+      padding: 16px 18px; margin: 18px 0 23px; border-left: 3px solid var(--pink);
+      border-radius: 0 13px 13px 0; background: rgba(255,117,184,.07);
+      color: #f2d9ed; font-size: .87rem;
+    }
+    .confirm-btn { width: 100%; padding: 15px; font-size: .9rem; }
+    .back-btn {
+      display: block; margin: 14px auto 0; color: var(--muted);
+      background: none; border: 0; font-size: .8rem;
+    }
+    .email-status { min-height: 18px; text-align: center; color: var(--muted); font-size: .72rem; margin-top: 12px; }
+    .music-player {
+      position: fixed; z-index: 20; right: 18px; bottom: 18px;
+      display: flex; align-items: center; gap: 11px;
+      padding: 10px 14px 10px 10px; border: 1px solid var(--line);
+      border-radius: 99px; background: rgba(26,18,39,.92);
+      box-shadow: 0 10px 35px rgba(0,0,0,.3); backdrop-filter: blur(12px);
+    }
+    .music-toggle {
+      width: 35px; height: 35px; border: 0; border-radius: 50%;
+      color: #2a1735; background: linear-gradient(130deg,#ff9bc9,#bda1ff);
+      font-size: .95rem;
+    }
+    .music-copy { line-height: 1.25; }
+    .music-copy strong { display: block; font-size: .72rem; }
+    .music-copy span { color: var(--muted); font-size: .62rem; }
+    .heart {
+      position: fixed; z-index: 50; pointer-events: none;
+      animation: heart-fly 2.3s ease-out forwards;
+      filter: drop-shadow(0 0 8px rgba(255,117,184,.5));
+    }
+    @keyframes heart-fly {
+      0% { transform: translate(0,0) scale(.6) rotate(0); opacity: 0; }
+      12% { opacity: 1; }
+      100% { transform: translate(var(--dx),-100vh) scale(1.4) rotate(var(--rot)); opacity: 0; }
+    }
+    .hidden { display: none !important; }
+
+    @media (max-width: 800px) {
+      .grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .food-card { min-height: 235px; padding: 20px; }
+    }
+    @media (max-width: 540px) {
+      .page { width: min(100% - 28px, 440px); padding-top: 28px; }
+      .topline { margin-bottom: 38px; font-size: .66rem; }
+      .top-tag { padding: 7px 10px; }
+      .grid { grid-template-columns: 1fr; gap: 12px; margin-top: 26px; }
+      .food-card { min-height: 0; padding: 20px; }
+      .food-card p { min-height: 0; }
+      .actions { gap: 8px; }
+      .btn { flex: 1; }
+      .details { grid-template-columns: 1fr; }
+      .detail.full { grid-column: auto; }
+      .music-player { right: 12px; bottom: 12px; }
+      .footer-note { margin-bottom: 30px; }
+      .love-actions { flex-direction: column; align-items: stretch; }
+      .love-actions .btn { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topline">
+      <div class="brand"><span class="brand-dot"></span> DATE.APP <span>v1.0</span></div>
+      <div class="top-tag">Hecho con amor y JavaScript</div>
+    </div>
+
+    <!-- Pantalla inicial: pequeña prueba de amor -->
+    <section id="loveScreen" class="screen active" aria-labelledby="loveTitle">
+      <div class="panel love-panel">
+        <div class="love-icon" aria-hidden="true">💜</div>
+        <div class="eyebrow">✦ VALIDACIÓN ANTES DE CONTINUAR ✦</div>
+        <h1 id="loveTitle">¿Me <span class="gradient">amas?</span></h1>
+        <p class="love-copy">Antes de elegir el plan, hay una pregunta muy importante que responder.</p>
+        <p id="loveStatus" class="love-status" role="status" aria-live="polite"></p>
+        <div class="love-actions">
+          <button id="loveYesButton" class="btn btn-yes" type="button">Sí, obvio que sí</button>
+          <button id="loveNoButton" class="btn btn-no" type="button">No</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pantalla de selección -->
+    <section id="selectionScreen" class="screen" aria-labelledby="selectionTitle">
+      <header class="hero">
+        <div class="eyebrow">✦ UNA INVITACIÓN MUY IMPORTANTE ✦</div>
+        <h1 id="selectionTitle" tabindex="-1">¿Qué se te <span class="gradient">antoja hoy?</span></h1>
+        <p>He preparado algunas opciones. Tú eliges el plan y yo me encargo del resto.</p>
+        <div class="hint">Pista: todas las opciones incluyen mi compañía y muchos besos.</div>
+      </header>
+
+      <div class="grid" id="foodGrid">
+        <article class="food-card" data-option="Sushi">
+          <div class="food-icon">🍣</div><h2>Sushi</h2>
+          <p>Rolls, algo rico para compartir y una cita deliciosa.</p>
+          <div class="actions">
+            <button class="btn btn-yes" data-yes="Sushi">Sí, vamos</button>
+            <button class="btn btn-no" type="button">No, gracias</button>
+          </div>
+        </article>
+        <article class="food-card" data-option="Pizza">
+          <div class="food-icon">🍕</div><h2>Pizza</h2>
+          <p>Una pizza calentita, conversación y cero apuro.</p>
+          <div class="actions">
+            <button class="btn btn-yes" data-yes="Pizza">Sí, vamos</button>
+            <button class="btn btn-no" type="button">No, gracias</button>
+          </div>
+        </article>
+        <article class="food-card" data-option="Ramen">
+          <div class="food-icon">🍜</div><h2>Ramen</h2>
+          <p>Un caldito rico para entrar en calor juntitos.</p>
+          <div class="actions">
+            <button class="btn btn-yes" data-yes="Ramen">Sí, vamos</button>
+            <button class="btn btn-no" type="button">No, gracias</button>
+          </div>
+        </article>
+        <article class="food-card" data-option="Mexicana">
+          <div class="food-icon">🌮</div><h2>Mexicana</h2>
+          <p>Tacos, sabores intensos y una noche entretenida.</p>
+          <div class="actions">
+            <button class="btn btn-yes" data-yes="Mexicana">Sí, vamos</button>
+            <button class="btn btn-no" type="button">No, gracias</button>
+          </div>
+        </article>
+        <article class="food-card" data-option="Picnic + Besos">
+          <div class="food-icon">🧺💋</div><h2>Picnic + Besos</h2>
+          <p>Una mantita, algo rico y el atardecer de fondo.</p>
+          <div class="actions">
+            <button class="btn btn-yes" data-yes="Picnic + Besos">Sí, vamos</button>
+            <button class="btn btn-no" type="button">No, gracias</button>
+          </div>
+        </article>
+      </div>
+      <div class="footer-note">© 2026 · Desarrollado especialmente para alguien especial.</div>
+    </section>
+
+    <!-- Pantalla de procesamiento -->
+    <section id="processingScreen" class="screen">
+      <div class="panel">
+        <div class="loader-orb"></div>
+        <h2 class="processing-title">Preparando tu cita</h2>
+        <div id="processingMessage" class="processing-message">Validando antojo...</div>
+        <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
+      </div>
+    </section>
+
+    <!-- Pantalla de checkout -->
+    <section id="checkoutScreen" class="screen">
+      <div class="panel checkout">
+        <div class="checkout-head">
+          <div class="success-icon">💜</div>
+          <h2 id="checkoutTitle">Sushi Desbloqueado</h2>
+          <p>Tu plan romántico está casi listo.</p>
+        </div>
+
+        <div class="price-box">
+          <div class="price">$0.00 <small>/ Amor infinito</small></div>
+        </div>
+
+        <div class="details">
+          <div class="detail">
+            <label for="dateInput">FECHA DE LA CITA</label>
+            <input id="dateInput" type="date">
+          </div>
+          <div class="detail">
+            <label for="timeInput">HORA</label>
+            <input id="timeInput" type="time" value="19:00">
+          </div>
+          <div class="detail full">
+            <label>INCLUYE</label>
+            <strong id="includedText">Palitos incluidos</strong>
+          </div>
+        </div>
+
+        <div class="romantic-note" id="romanticNote">
+          Una cita contigo siempre es mi plan favorito.
+        </div>
+
+        <button id="confirmButton" class="btn btn-yes confirm-btn">Confirmar cita</button>
+        <button id="backButton" class="back-btn">← Cambiar mi elección</button>
+        <div id="emailStatus" class="email-status"></div>
+      </div>
+    </section>
+
+    <!-- Pantalla final -->
+    <section id="finalScreen" class="screen">
+      <div class="panel">
+        <div class="success-icon">💞</div>
+        <h2 class="processing-title">¡Cita confirmada!</h2>
+        <p style="color:var(--muted)">Te llegará un recordatorio 💜</p>
+        <p id="finalSummary" style="margin:22px 0;color:#f1d9f0"></p>
+        <p id="deliveryStatus" class="email-status" role="status" aria-live="polite"></p>
+        <button class="btn btn-yes" onclick="location.reload()">Volver al inicio</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Reproductor lo-fi generado con Web Audio API -->
+  <div class="music-player">
+    <button id="musicToggle" class="music-toggle" aria-label="Reproducir música">▶</button>
+    <div class="music-copy"><strong>Lo-fi para dos</strong><span id="musicState">Pausado · instrumental</span></div>
+  </div>
+
+  <script>
+    /**************************************************************
+     * CONFIGURACIÓN EMAILJS
+     * 1. Crea una cuenta gratuita en https://www.emailjs.com/
+     * 2. Configura un servicio de correo y una plantilla.
+     * 3. Reemplaza estos tres valores por los de tu cuenta.
+     * 4. En la plantilla configura el destinatario como {{to_email}}
+     *    y agrega las variables {{opcion}}, {{fecha}}, {{hora}}.
+     * 5. Para Google Calendar, sigue la guía incluida y completa
+     *    GOOGLE_CALENDAR_WEB_APP_URL y GOOGLE_CALENDAR_SHARED_TOKEN.
+     **************************************************************/
+    const EMAILJS_PUBLIC_KEY = "oCAdsvXiaEFz3UpqJ";
+    const EMAILJS_SERVICE_ID = "Invitacion_rom";
+    const EMAILJS_TEMPLATE_ID = "template_yogy1jf";
+    const TU_EMAIL_AQUI = "benjagome13@gmail.com";
+    const GOOGLE_CALENDAR_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxBl0icF_C3m1tMjqMVmZX20gm23c91AaPjs5A_dw0x_JQLLOg59MVWLKxCaaBOMeXs0A/exec";
+    const GOOGLE_CALENDAR_SHARED_TOKEN = "Benja123123";
+    const GOOGLE_CALENDAR_EVENT_DURATION_MINUTES = 120;
+
+    const plans = {
+      "Sushi": {
+        icon: "🍣",
+        included: "Palitos incluidos",
+        note: "Tú pones la sonrisa, yo invito el sushi. Y si me das permiso, también te robo un beso."
+      },
+      "Pizza": {
+        icon: "🍕",
+        included: "Pizza para compartir + extra de cariño",
+        note: "Prometo dejarte la última porción... aunque probablemente intente negociar por un beso."
+      },
+      "Ramen": {
+        icon: "🍜",
+        included: "Ramen calentito y compañía asegurada",
+        note: "Un ramen calentito, una buena conversación y tú al otro lado de la mesa. No necesito más."
+      },
+      "Mexicana": {
+        icon: "🌮",
+        included: "Tacos, salsitas y muchos mimos",
+        note: "Que pique la comida, no las ganas de estar contigo. Esta noche es para nosotros."
+      },
+      "Picnic + Besos": {
+        icon: "🧺💋",
+        included: "Manta + atardecer incluido",
+        note: "Un lugar bonito, algo rico para picar y todo el tiempo del mundo para abrazarte."
+      }
+    };
+
+    let selectedOption = "";
+    const screens = ["loveScreen", "selectionScreen", "processingScreen", "checkoutScreen", "finalScreen"];
+    const $ = (id) => document.getElementById(id);
+
+    function showScreen(id) {
+      screens.forEach(screenId => {
+        const el = $(screenId);
+        el.classList.toggle("active", screenId === id);
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // La respuesta negativa cambia el mensaje; al sexto intento solo queda el sí.
+    const loveMessages = [
+      "Respuesta equivocada. Inténtalo otra vez. 💜",
+      "¿Estás segura? Piénsalo bien, bonita. 🥺",
+      "¿Después de todo lo que hemos vivido? 🥹",
+      "Error 404: amor no encontrado. 🚨",
+      "Mi corazoncito no soporta esa respuesta. 💔",
+      "Solo existe una respuesta correcta. 🔒"
+    ];
+    let loveNoAttempts = 0;
+
+    $("loveNoButton").addEventListener("click", () => {
+      $("loveStatus").textContent = loveMessages[loveNoAttempts];
+      loveNoAttempts++;
+
+      if (loveNoAttempts === loveMessages.length) {
+        $("loveNoButton").remove();
+        $("loveYesButton").textContent = "Sí, te amo";
+        $("loveYesButton").focus();
+      }
+    });
+
+    $("loveYesButton").addEventListener("click", () => {
+      $("loveYesButton").disabled = true;
+      $("loveStatus").textContent = "¡Sabía que sí! Preparando las opciones para nuestra cita...";
+      launchHearts();
+      setTimeout(() => {
+        showScreen("selectionScreen");
+        $("selectionTitle").focus();
+      }, 1050);
+    });
+
+    // El botón "No" intenta escapar cuando el cursor o el dedo se acercan.
+    document.querySelectorAll(".btn-no").forEach(button => {
+      function escapeButton() {
+        const card = button.closest(".food-card");
+        const maxX = Math.max(0, card.clientWidth - button.offsetWidth - 24);
+        const maxY = Math.max(0, card.clientHeight - button.offsetHeight - 20);
+        const x = Math.random() * maxX;
+        const y = Math.random() * maxY;
+        button.style.position = "absolute";
+        button.style.left = `${12 + x}px`;
+        button.style.top = `${Math.max(12, y)}px`;
+        button.style.zIndex = "5";
+      }
+      button.addEventListener("pointerenter", escapeButton);
+      button.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        escapeButton();
+      });
+      button.addEventListener("focus", escapeButton);
+    });
+
+    // Selección del plan y secuencia de carga.
+    document.querySelectorAll("[data-yes]").forEach(button => {
+      button.addEventListener("click", () => {
+        selectedOption = button.dataset.yes;
+        startProcessing();
+      });
+    });
+
+    function startProcessing() {
+      showScreen("processingScreen");
+      const messages = [
+        "Validando antojo...",
+        "Buscando el mejor lugar...",
+        "Reservando mesa...",
+        "Activando plan romántico..."
+      ];
+      let index = 0;
+      $("processingMessage").textContent = messages[0];
+      $("progressFill").style.width = "0%";
+
+      const interval = setInterval(() => {
+        index++;
+        $("progressFill").style.width = `${(index / messages.length) * 100}%`;
+        if (index < messages.length) {
+          $("processingMessage").textContent = messages[index];
+        } else {
+          clearInterval(interval);
+          setTimeout(showCheckout, 550);
+        }
+      }, 1050);
+    }
+
+    function showCheckout() {
+      const plan = plans[selectedOption];
+      $("checkoutTitle").textContent = `${selectedOption} Desbloqueada`;
+      $("includedText").textContent = plan.included;
+      $("romanticNote").textContent = plan.note;
+
+      // Fecha sugerida: mañana. Ella puede cambiarla antes de confirmar.
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const localDate = new Date(tomorrow.getTime() - tomorrow.getTimezoneOffset() * 60000)
+        .toISOString().slice(0, 10);
+      $("dateInput").value = localDate;
+      showScreen("checkoutScreen");
+    }
+
+    function isGoogleCalendarConfigured() {
+      return (
+        GOOGLE_CALENDAR_WEB_APP_URL !== "TU_URL_DE_WEB_APP_DE_GOOGLE_AQUI" &&
+        GOOGLE_CALENDAR_SHARED_TOKEN !== "TU_CLAVE_COMPARTIDA_AQUI"
+      );
+    }
+
+    // Envía la cita al Web App de Apps Script que se ejecuta con la cuenta del dueño.
+    async function addToGoogleCalendar(booking) {
+      if (!isGoogleCalendarConfigured()) return { configured: false, requested: false };
+
+      try {
+        await fetch(GOOGLE_CALENDAR_WEB_APP_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            token: GOOGLE_CALENDAR_SHARED_TOKEN,
+            bookingId: booking.id,
+            opcion: booking.opcion,
+            fecha: booking.fecha,
+            hora: booking.hora,
+            duracionMinutos: GOOGLE_CALENDAR_EVENT_DURATION_MINUTES
+          })
+        });
+        return { configured: true, requested: true };
+      } catch (error) {
+        console.error("No se pudo solicitar la cita en Google Calendar:", error);
+        return { configured: true, requested: false };
+      }
+    }
+
+    $("backButton").addEventListener("click", () => showScreen("selectionScreen"));
+
+    // Confetti de corazones creado sin librerías externas.
+    function launchHearts() {
+      const symbols = ["💜", "💗", "💕", "♥", "💖"];
+      for (let i = 0; i < 42; i++) {
+        const heart = document.createElement("span");
+        heart.className = "heart";
+        heart.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        heart.style.left = `${Math.random() * 100}vw`;
+        heart.style.bottom = `${-10 - Math.random() * 20}px`;
+        heart.style.fontSize = `${15 + Math.random() * 22}px`;
+        heart.style.setProperty("--dx", `${(Math.random() - .5) * 240}px`);
+        heart.style.setProperty("--rot", `${(Math.random() - .5) * 100}deg`);
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 2500);
+      }
+    }
+
+    $("confirmButton").addEventListener("click", async () => {
+      const date = $("dateInput").value;
+      const time = $("timeInput").value;
+      if (!date || !time) {
+        alert("Elige una fecha y una hora para la cita.");
+        return;
+      }
+
+      const booking = {
+        id: window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        opcion: selectedOption,
+        fecha: date,
+        hora: time,
+        confirmadaEn: new Date().toISOString()
+      };
+
+      // Guardar la reserva en este dispositivo/navegador.
+      const saved = JSON.parse(localStorage.getItem("citaRomantica") || "[]");
+      saved.push(booking);
+      localStorage.setItem("citaRomantica", JSON.stringify(saved));
+
+      $("confirmButton").disabled = true;
+      $("confirmButton").textContent = "Confirmando...";
+      $("emailStatus").textContent = "Guardando tu respuesta...";
+
+      let emailSent = false;
+      const emailConfigured =
+        EMAILJS_PUBLIC_KEY !== "TU_PUBLIC_KEY_AQUI" &&
+        EMAILJS_SERVICE_ID !== "TU_SERVICE_ID_AQUI" &&
+        EMAILJS_TEMPLATE_ID !== "TU_TEMPLATE_ID_AQUI" &&
+        TU_EMAIL_AQUI !== "TU_EMAIL_AQUI";
+
+      if (emailConfigured && window.emailjs) {
+        try {
+          emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+          await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+            to_email: TU_EMAIL_AQUI,
+            opcion: booking.opcion,
+            fecha: booking.fecha,
+            hora: booking.hora,
+            confirmada_en: new Date().toLocaleString("es-CL")
+          });
+          emailSent = true;
+        } catch (error) {
+          console.error("No se pudo enviar el correo:", error);
+        }
+      }
+
+      const calendarResult = await addToGoogleCalendar(booking);
+
+      launchHearts();
+      $("finalSummary").textContent =
+        `${plans[selectedOption].icon} ${selectedOption} · ${date} · ${time}`;
+      if (emailSent && calendarResult.requested) {
+        $("deliveryStatus").textContent = "Confirmación enviada y cita añadida a tu calendario. 💜";
+      } else if (calendarResult.requested) {
+        $("deliveryStatus").textContent = "La cita fue enviada a tu calendario. 💜";
+      } else if (emailSent) {
+        $("deliveryStatus").textContent = "Confirmación enviada. 💜";
+      } else {
+        $("deliveryStatus").textContent = "Tu cita quedó guardada en este dispositivo. 💜";
+      }
+      showScreen("finalScreen");
+
+      if (!emailConfigured) {
+        console.info("Configura EmailJS en el bloque CONFIGURACIÓN EMAILJS para activar el envío.");
+      } else if (!emailSent) {
+        console.warn("La cita quedó guardada en este dispositivo, pero el correo no pudo enviarse.");
+      }
+      if (calendarResult.configured && !calendarResult.requested) {
+        console.warn("La cita quedó guardada, pero no se pudo enviar a Google Calendar.");
+      }
+      alert("¡Cita confirmada! Tu respuesta quedó registrada 💜");
+    });
+
+    /**************************************************************
+     * MÚSICA LO-FI ORIGINAL
+     * Loop ambiental sintetizado con Web Audio API (sin archivos).
+     * Los navegadores requieren una interacción para iniciar audio.
+     **************************************************************/
+    let audioContext = null;
+    let masterGain = null;
+    let musicTimer = null;
+    let musicPlaying = false;
+    let noteIndex = 0;
+    const melody = [261.63, 329.63, 392.00, 329.63, 293.66, 349.23, 440.00, 349.23];
+
+    function playSoftNote(frequency, startTime, duration, volume) {
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      const filter = audioContext.createBiquadFilter();
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(frequency, startTime);
+      filter.type = "lowpass";
+      filter.frequency.value = 900;
+      gain.gain.setValueAtTime(0, startTime);
+      gain.gain.linearRampToValueAtTime(volume, startTime + .12);
+      gain.gain.exponentialRampToValueAtTime(.001, startTime + duration);
+      oscillator.connect(filter);
+      filter.connect(gain);
+      gain.connect(masterGain);
+      oscillator.start(startTime);
+      oscillator.stop(startTime + duration + .05);
+    }
+
+    function scheduleMusic() {
+      if (!musicPlaying) return;
+      const now = audioContext.currentTime;
+      const freq = melody[noteIndex % melody.length];
+      playSoftNote(freq, now, 1.8, .12);
+      // Nota grave suave cada cuatro notas.
+      if (noteIndex % 4 === 0) playSoftNote(freq / 2, now, 2.8, .07);
+      noteIndex++;
+    }
+
+    $("musicToggle").addEventListener("click", async () => {
+      if (!audioContext) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) {
+          $("musicState").textContent = "Audio no compatible";
+          return;
+        }
+        audioContext = new AudioContextClass();
+        masterGain = audioContext.createGain();
+        masterGain.gain.value = .32;
+        masterGain.connect(audioContext.destination);
+      }
+      if (audioContext.state === "suspended") await audioContext.resume();
+
+      musicPlaying = !musicPlaying;
+      $("musicToggle").textContent = musicPlaying ? "Ⅱ" : "▶";
+      $("musicToggle").setAttribute("aria-label", musicPlaying ? "Pausar música" : "Reproducir música");
+      $("musicState").textContent = musicPlaying ? "Reproduciendo · instrumental" : "Pausado · instrumental";
+
+      if (musicPlaying) {
+        scheduleMusic();
+        musicTimer = setInterval(scheduleMusic, 650);
+      } else {
+        clearInterval(musicTimer);
+      }
+    });
+  </script>
+</body>
+</html>
